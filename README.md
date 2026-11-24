@@ -8,7 +8,7 @@
 ![License](https://img.shields.io/badge/License-GPLv3-blue?style=flat-square)
 ![Status](https://img.shields.io/badge/Status-Active_Development-orange?style=flat-square)
 
-[![Python CI](https://github.com/TheWinterCoderDev/Data-Analysis-Toolbox-for-Civil-Engineers/actions/workflows/python-ci.yml/badge.svg?branch=refactor%2Fconsolidation-modernization)](https://github.com/TheWinterCoderDev/Data-Analysis-Toolbox-for-Civil-Engineers/actions/workflows/python-ci.yml)
+[![Python CI](https://github.com/TheWinterCoderDev/Civil-Engineering-Toolbox/actions/workflows/python-ci.yml/badge.svg?branch=refactor%2Fconsolidation-modernization)](https://github.com/TheWinterCoderDev/Civil-Engineering-Toolbox/actions/workflows/python-ci.yml)
 
 ---
 
