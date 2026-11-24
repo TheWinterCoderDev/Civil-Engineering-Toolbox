@@ -93,3 +93,21 @@ def test_nonfinite_inputs():
 
     with pytest.raises(ValueError):
         porewater_pressure(0.5, np.inf)
+
+def test_reference_pressure_value():
+    """Verify a reference value of the Fourier solution."""
+
+    actual = porewater_pressure(
+        z=0.5,
+        time_factor=0.1,
+        n_terms=80,
+    )
+
+    expected = 0.73565131524419
+
+    assert float(actual) == pytest.approx(
+        expected,
+        rel=1e-10,
+        abs=1e-12,
+    )
+
