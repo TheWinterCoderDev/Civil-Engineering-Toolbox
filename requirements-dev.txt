@@ -1,0 +1,3 @@
+
+-r consolidation_1_d/requirements.txt
+pytest

@@ -1,0 +1,428 @@
+
+# Geotechnical Engineering — Terzaghi 1D Consolidation
+
+**Module:** Geotechnical Engineering  
+**Project:** Civil Engineering Toolbox  
+**Author:** Raúl Galdeano Pazos  
+**Language:** Python  
+**Status:** Educational implementation
+
+---
+
+## 1. Overview
+
+This module implements an analytical Fourier-series
+solution to Terzaghi's classical one-dimensional
+consolidation equation.
+
+Its primary purpose is to compute and visualize the
+dissipation of normalized excess porewater pressure
+within a saturated soil layer.
+
+The module provides reusable numerical calculations
+and reproducible consolidation isochrones.
+
+### Main capabilities
+
+- Compute normalized excess porewater pressure.
+- Evaluate consolidation at different time factors.
+- Generate consolidation isochrones.
+- Support vectorized numerical calculations.
+- Validate input parameters.
+- Perform automated numerical tests.
+
+---
+
+## 2. Physical Background
+
+Consolidation is the time-dependent process through
+which saturated soil undergoes volume reduction
+as excess porewater pressure dissipates.
+
+Under Terzaghi's classical model, an applied load
+initially generates excess porewater pressure.
+
+As drainage occurs, this pressure gradually decreases
+and effective stress increases.
+
+The model describes the evolution of excess porewater
+pressure as a function of depth and time.
+
+---
+
+## 3. Governing Differential Equation
+
+Terzaghi's one-dimensional consolidation equation is:
+
+$$
+\frac{\partial u}{\partial t}
+=
+c_v\frac{\partial^2 u}{\partial z^2}
+$$
+
+Where:
+
+- $u$: excess porewater pressure [Pa].
+- $t$: elapsed time [s].
+- $z$: spatial coordinate [m].
+- $c_v$: coefficient of consolidation [m²/s].
+
+The coefficient of consolidation describes the rate
+at which the consolidation process develops.
+
+---
+
+## 4. Model Assumptions
+
+The analytical solution implemented in this module
+is based on the following idealizations:
+
+1. Soil is fully saturated.
+2. Soil is homogeneous.
+3. Soil properties remain constant.
+4. Flow is one-dimensional.
+5. Soil deformation is one-dimensional.
+6. Darcy's law is applicable.
+7. The coefficient of consolidation is constant.
+8. Initial excess porewater pressure is uniform.
+9. Drainage boundaries are idealized.
+10. Secondary compression is not represented.
+
+These assumptions limit the applicability of the
+model to more complex field conditions.
+
+---
+
+## 5. Dimensionless Variables
+
+The model uses normalized variables to facilitate
+comparison between different consolidation problems.
+
+### Normalized depth
+
+$$
+Z=\frac{z}{H_{dr}}
+$$
+
+Where $H_{dr}$ is the maximum drainage path length.
+
+The implemented domain is:
+
+$$
+0\leq Z\leq1
+$$
+
+The coordinate convention is:
+
+- $Z=0$: drained boundary.
+- $Z=1$: symmetry plane or impermeable boundary.
+
+For a uniformly loaded, doubly drained layer,
+the solution represents one half of the layer
+using symmetry.
+
+### Time factor
+
+$$
+T_v=\frac{c_v t}{H_{dr}^2}
+$$
+
+Where:
+
+- $T_v$: dimensionless time factor.
+- $c_v$: coefficient of consolidation [m²/s].
+- $t$: elapsed time [s].
+- $H_{dr}$: maximum drainage path [m].
+
+### Normalized excess porewater pressure
+
+$$
+W(Z,T_v)=\frac{u(Z,t)}{u_0}
+$$
+
+Where $u_0$ is the initially uniform excess
+porewater pressure.
+
+The computational output is dimensionless.
+
+---
+
+## 6. Boundary and Initial Conditions
+
+The model assumes the following conditions.
+
+### Drained boundary
+
+$$
+W(0,T_v)=0
+$$
+
+The excess porewater pressure is zero at the
+drainage boundary.
+
+### Symmetry boundary
+
+$$
+\frac{\partial W}{\partial Z}(1,T_v)=0
+$$
+
+No hydraulic gradient occurs across the
+symmetry plane.
+
+### Initial condition
+
+$$
+W(Z,0)=1
+\qquad 0<Z\leq1
+$$
+
+Initially, excess porewater pressure is uniform
+throughout the interior of the soil domain.
+
+At the drained boundary, the boundary condition
+takes precedence.
+
+---
+
+## 7. Analytical Fourier-Series Solution
+
+The normalized excess porewater pressure is given by:
+
+$$
+W(Z,T_v)=
+\sum_{n=0}^{\infty}
+\frac{4}{(2n+1)\pi}
+\sin\left(
+\frac{(2n+1)\pi Z}{2}
+\right)
+\exp\left(
+-\frac{(2n+1)^2\pi^2T_v}{4}
+\right)
+$$
+
+The analytical solution is represented as an
+infinite series.
+
+For numerical implementation, the series is
+truncated to a finite number of terms:
+
+$$
+W_N(Z,T_v)=
+\sum_{n=0}^{N-1}
+\frac{4}{(2n+1)\pi}
+\sin\left(
+\frac{(2n+1)\pi Z}{2}
+\right)
+\exp\left(
+-\frac{(2n+1)^2\pi^2T_v}{4}
+\right)
+$$
+
+Where $N$ is the selected number of Fourier terms.
+
+The current implementation uses 80 terms by default.
+
+Increasing the number of terms can improve the
+approximation, particularly for small positive
+time factors.
+
+At exactly $T_v=0$, convergence near the
+drainage boundary requires particular care.
+
+---
+
+## 8. Python Implementation
+
+The numerical solver is located at:
+
+`src/civil_engineering_toolbox/geotechnics/consolidation_1d.py`
+
+The main function is:
+
+```python
+porewater_pressure(z, time_factor, n_terms=80)
+```
+
+### Example
+
+```python
+from civil_engineering_toolbox.geotechnics.consolidation_1d import (
+    porewater_pressure,
+)
+
+pressure = porewater_pressure(
+    z=0.5,
+    time_factor=0.1,
+    n_terms=80,
+)
+
+print(pressure)
+```
+
+The function returns normalized excess porewater
+pressure at the selected position and time factor.
+
+---
+
+## 9. Isochrone Generation
+
+An isochrone represents the spatial distribution
+of excess porewater pressure at a given time factor.
+
+The visualization example is located at:
+
+`examples/consolidation_1d_example.py`
+
+The following time factors are represented:
+
+| Time Factor | Interpretation |
+|---|---|
+| 0.01 | Early consolidation |
+| 0.02 | Early consolidation |
+| 0.05 | Developing consolidation |
+| 0.10 | Developing consolidation |
+| 0.20 | Intermediate consolidation |
+| 0.50 | Advanced consolidation |
+| 1.00 | Near-complete consolidation |
+| 2.00 | Very small remaining excess pressure |
+
+These descriptions are qualitative.
+
+The numerical values do not represent fixed
+elapsed times without specifying $c_v$ and
+$H_{dr}$.
+
+### Generate the figure
+
+From the repository root:
+
+```bash
+python examples/consolidation_1d_example.py
+```
+
+The output is saved to:
+
+`outputs/terzaghi_1d_isochrones.png`
+
+---
+
+## 10. Numerical Verification
+
+Automated tests are provided using pytest.
+
+The tests cover:
+
+1. Drained boundary condition.
+2. Pressure reduction with time.
+3. Long-time analytical approximation.
+4. Vectorized spatial calculations.
+5. Invalid depth coordinates.
+6. Negative time factors.
+7. Invalid Fourier-series parameters.
+8. Non-finite input values.
+
+Run the tests from the repository root:
+
+```bash
+python -m pytest -v
+```
+
+Passing tests verify the specific tested
+conditions. They do not establish complete
+numerical accuracy over all possible inputs.
+
+---
+
+## 11. Known Numerical Limitations
+
+### Fourier-series truncation
+
+The analytical series is approximated using
+a finite number of terms.
+
+### Early-time behaviour
+
+Convergence requires particular attention
+near the initial condition and drainage
+boundary.
+
+### Conditioning and error analysis
+
+A comprehensive convergence study and
+quantitative truncation-error assessment
+have not yet been implemented.
+
+### Physical limitations
+
+The model does not represent:
+
+- Multidimensional drainage.
+- Nonlinear soil behaviour.
+- Variable soil properties.
+- Secondary compression.
+- Complex boundary conditions.
+- Coupled advanced constitutive behaviour.
+
+---
+
+## 12. Potential Engineering Applications
+
+This module can support educational studies involving:
+
+- One-dimensional consolidation.
+- Interpretation of porewater pressure dissipation.
+- Introductory settlement analysis.
+- Soil mechanics coursework.
+- Numerical methods education.
+- Scientific visualization of geotechnical models.
+
+Direct predictions for real construction projects
+require additional engineering data, verification
+and appropriate professional judgement.
+
+---
+
+## 13. Future Development
+
+Planned improvements include:
+
+- Fourier-series convergence analysis.
+- Quantitative numerical error assessment.
+- Average degree of consolidation.
+- Conversion between physical and normalized time.
+- Consolidation settlement calculations.
+- Alternative drainage conditions.
+- Comparison with independent reference solutions.
+
+---
+
+## 14. References
+
+- Terzaghi, K. (1943). *Theoretical Soil Mechanics*.
+- Terzaghi, K., Peck, R. B., and Mesri, G. (1996).
+  *Soil Mechanics in Engineering Practice*, 3rd ed.
+- Craig, R. F. *Craig's Soil Mechanics*.
+- NumPy Documentation.
+- Matplotlib Documentation.
+- pytest Documentation.
+
+---
+
+## Disclaimer
+
+This module is intended for educational and
+research purposes.
+
+It is not certified for production, construction,
+structural safety or safety-critical engineering use.
+
+All engineering calculations must be independently
+validated before application to real projects.
+
+---
+
+**Civil Engineering Toolbox**
+
+*Engineering knowledge should be shared.*
+
+**Ad Victoriam!**
